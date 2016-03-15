@@ -5,10 +5,10 @@ var sockets = require('../../services/socket');
 
 module.exports = route;
 
-if (process.env.NODE_ENV !== 'production') {
+// if (process.env.NODE_ENV !== 'production') {
   var mock1 = require('./games-test');
   route.use('/mock1', mock1);
-}
+// }
 
 route.post('/', function(request, response, next) {
   ifLoggedIn(request.user, function() {
