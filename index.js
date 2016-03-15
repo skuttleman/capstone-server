@@ -16,11 +16,13 @@ app.use(bodyParser.json());
 app.use(function(request, response, next) {
   response.header('Access-Control-Allow-Origin', request.headers.origin);
   response.header('Access-Control-Allow-Headers', 'Authorization');
+  response.header('Access-Control-Allow-Credentials', true);
   next();
 });
 
-app.use(require('./services/auth'));
+app.use(require('./services/socket')(server));
 
+app.use(require('./services/auth'));
 app.use('/auth', require('./api/auth'));
 app.use(function(request, response, next) {
   if (request.user || request.method == 'OPTIONS') next();
