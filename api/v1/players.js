@@ -1,3 +1,5 @@
+var route = require('express').Router();
+module.exports = route;
 
 route.get('/:id', function(request, response, next) {
   knex('players').where({ id: request.params.id }).then(function(players) {
