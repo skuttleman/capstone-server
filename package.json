@@ -12,6 +12,7 @@
   "dependencies": {
     "body-parser": "^1.15.0",
     "cookie-session": "^1.2.0",
+    "cors": "^2.7.1",
     "express": "^4.13.4",
     "jsonwebtoken": "^5.7.0",
     "knex": "^0.10.0",

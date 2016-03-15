@@ -8,10 +8,12 @@ var express = require('express'), app = express();
 var server = require('http').Server(app);
 var bodyParser = require('body-parser');
 var port = process.env.PORT || 8000;
+var cors = require('cors');
 
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+app.use(cors());
 
 app.use(function(request, response, next) {
   response.header('Access-Control-Allow-Origin', request.headers.origin);
@@ -38,6 +40,7 @@ server.listen(port, function() {
 
 app.use(function(err, request, response, next) {
   response.status(err.status || 500);
+  console.error(err);
   response.json({
     message: err.message,
     error: process.env.NODE_ENV === 'development' ? err : {}

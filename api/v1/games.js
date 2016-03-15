@@ -25,7 +25,7 @@ route.post('/', function(request, response, next) {
 route.post('/levels', function(request, response, next) {
   ifLoggedIn(request.user, function() {
     if (request.user.id < 3) {
-      return mongo.runQuery('game_levels', 'insert', { state: request.body.state })
+      return mongo.runQuery('game_levels', 'insert', { creator: request.user.id, state: request.body.state })
       .then(function(results) {
         response.json({ message: 'level inserted', _id: results[0]._id.toString() });
       });
@@ -116,7 +116,8 @@ route.get('/:id', function(request, response, next) {
       return mongo.runQuery('game_states', 'find', { _id: mongo.ObjectId(games[0].game_state_id) })
       .then(function(states) {
         var state = states[0].states[states[0].states.length - 1];
-        response.json({ games: [joinObjects(games[0], state)] });
+        var game = joinObjects(games[0], state);
+        response.json({ games: [game] });
       });
     } else {
       response.json({ games: [] });
@@ -224,7 +225,7 @@ function respondToGame(userId, gameId, newStatus, channel, message) {
 
 function makeMove(userId, gameId, state) {
   var remove = ['player1', 'player2', 'creator', 'game_status', 'game_status_id'];
-  var mongoState = trimObject(state, remove);
+  var mongoState = trimObject(state.state, remove);
   return Promise.resolve({
     state: mongoState,
     userId: userId,
@@ -245,9 +246,10 @@ function updateGame(data) {
       var searchString = (game.game_status == 'player1 turn' ? 'player2 turn' : 'player1 turn');
       var status = results[1].find(status => status.status == searchString);
       return Promise.all([
-        knex('games').update({ game_status_id: status.id }).where({ id: data.gameId }),
+        knex('games').update({ game_status_id: status.id, last_updated: new Date() })
+        .where({ id: data.gameId }),
         mongo.openDB().then(function(db) {
-          var search = { _id: mongo.ObjectId(game.level_id) };
+          var search = { _id: mongo.ObjectId(game.game_state_id) };
           return mongo.withOpen(db, 'game_states', 'findOne', search)
           .then(function(results) {
             return mongo.withOpen(db, 'game_states', 'update', search, {
