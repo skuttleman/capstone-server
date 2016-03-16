@@ -25,7 +25,12 @@ route.post('/', function(request, response, next) {
 route.post('/levels', function(request, response, next) {
   ifLoggedIn(request.user, function() {
     if (request.user.id < 3) {
-      return mongo.runQuery('game_levels', 'insert', { creator: request.user.id, state: request.body.state })
+      var level = {
+        name: request.body.name,
+        state: request.body.state,
+        creator_id: request.user.id
+      };
+      return mongo.runQuery('game_levels', 'insert', level)
       .then(function(results) {
         response.json({ message: 'level inserted', _id: results[0]._id.toString() });
       });
@@ -47,18 +52,37 @@ route.put('/levels/:id', function(request, response, next) {
 });
 
 route.get('/levels', function(request, response, next) {
-  mongo.runQuery('game_levels', 'find', {}).then(function(levels) {
+  return Promise.all([
+    mongo.runQuery('game_levels', 'find', {}),
+    knex('players')
+  ]).then(function (results) {
+    var levels = results[0], players = results[1];
+    levels.forEach(level=> level.creator = players.find(player=> player.id == level.creator_id));
     response.json({ levels: levels });
   }).catch(next);
 });
 
 route.get('/invitations', function(request, response, next) {
   ifLoggedIn(request.user, function() {
-    return gamesQuery().whereNot({ creator_id: request.user.id })
-    .andWhere({ 'game_statuses.status': 'not started' })
-    .andWhere(function() {
-      this.where({ player1_id: request.user.id }).orWhere({ player2_id: request.user.id });
-    }).then(processGames).then(function(games) {
+    return Promise.all([
+      gamesQuery().whereNot({ creator_id: request.user.id })
+      .andWhere({ 'game_statuses.status': 'not started' })
+      .andWhere(function() {
+        this.where({ player1_id: request.user.id }).orWhere({ player2_id: request.user.id });
+      }),
+      mongo.runQuery('game_states', 'find', {})
+    ]).then(function(results) {
+      return Promise.all([
+        processGames(results[0]),
+        Promise.resolve(results[1])
+      ]);
+    }).then(function(results) {
+      var games = results[0];
+      var levels = results[1];
+      games.forEach(function(game) {
+        game.level = levels.find(level=> level._id.toString() == game.game_state_id) || {};
+        delete game.level.states;
+      });
       response.json({ games: games });
     });
   }).catch(next);
@@ -66,9 +90,21 @@ route.get('/invitations', function(request, response, next) {
 
 route.get('/pending', function(request, response, next) {
   ifLoggedIn(request.user, function() {
-    return gamesQuery()
-    .where({ creator_id: request.user.id, 'game_statuses.status': 'not started' })
-    .then(processGames).then(function(games) {
+    return Promise.all([
+      gamesQuery()
+      .where({ creator_id: request.user.id, 'game_statuses.status': 'not started' }),
+      mongo.runQuery('game_states', 'find', {})
+    ]).then(function(results) {
+      return Promise.all([
+        processGames(results[0]), Promise.resolve(results[1])
+      ]);
+    }).then(function(results) {
+      var games = results[0];
+      var levels = results[1];
+      games.forEach(function(game) {
+        game.level = levels.find(level=> level._id.toString() == game.game_state_id) || {};
+        delete game.level.states;
+      });
       response.json({ games: games });
     });
   }).catch(next);
@@ -174,8 +210,15 @@ function getLevel(levelId, player1, player2, creator) {
 
 function addGameRecord(data) {
   var player1 = data.player1, player2 = data.player2, creator = data.creator;
+  var record = {
+    creator_id: creator,
+    level_id: data.level._id.toString(),
+    name: data.level.name,
+    states: [data.level.state],
+    thumbnail: data.level.thumbnail
+  };
   return Promise.all([
-    mongo.withOpen(data.db, 'game_states', 'insert', { states: [data.level.state] }),
+    mongo.withOpen(data.db, 'game_states', 'insert', record),
     knex('game_statuses')
   ]).then(function(results) {
     data.db.close();
@@ -200,22 +243,23 @@ function acceptGame(userId, gameId) {
 }
 
 function rejectGame(userId, gameId) {
-  return respondToGame(userId, gameId, 'rejected', 'reject game', 'Your invitation has been rejected.');
+  return respondToGame(userId, gameId, 'rejected', 'reject game', 'Your invitation has been rejected.', 'An invitation you\'ve received has been canceled');
 }
 
-function respondToGame(userId, gameId, newStatus, channel, message) {
+function respondToGame(userId, gameId, newStatus, channel, message, altMessage) {
   return knex('game_statuses').then(function(statuses) {
     var status = statuses.find(status => status.status == newStatus);
     var notStarted = statuses.find(status => status.status == 'not started');
     return knex('games').update({ game_status_id: status.id })
-    .returning('player1_id', 'player2_id').whereNot({ creator_id: userId })
-    .andWhere({ id: gameId, game_status_id: notStarted.id })
+    //.whereNot({ creator_id: userId })
+    .where({ id: gameId, game_status_id: notStarted.id })
     .andWhere(function() {
       this.where({ player1_id: userId }).orWhere({ player2_id: userId });
     });
   }).then(function() {
     return knex('games').where({ id: gameId }).then(function(games) {
       var otherPlayer = getOtherPlayer(userId, games[0].player1_id, games[0].player2_id);
+      message = games[0].creator_id == otherPlayer ? message : altMessage;
       return Promise.resolve({
         sendId: otherPlayer, channel: channel, data: { message: message, id: gameId }
       });
@@ -262,11 +306,12 @@ function updateGame(data) {
           });
         })
       ]).then(function() {
+        var otherPlayer = getOtherPlayer(data.userId, game.player1_id, game.player2_id);
         return Promise.resolve({
-          sendId: getOtherPlayer(data.userId, game.player1_id, game.player2_id),
+          sendId: otherPlayer,
           channel: 'game updated',
           data: {
-            message: 'It is your turn',
+            message: 'One of your games has been updated.',
             id: data.gameId
           }
         });
@@ -277,10 +322,10 @@ function updateGame(data) {
 
 function prepareData(user, player1, player2) {
   return function(data) {
+    data.message = 'You have received a new invitation';
     return Promise.resolve({
-      player1: player1,
-      player2: player2,
-      otherPlayerId: getOtherPlayer(user.id, player1, player2),
+      sendId: getOtherPlayer(user.id, player1, player2),
+      channel: 'new invitation',
       data: data
     });
   };
