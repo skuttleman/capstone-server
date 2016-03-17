@@ -1,4 +1,6 @@
 var route = require('express').Router();
+var sockets = require('../../services/socket');
+
 module.exports = route;
 
 var _wal = {
@@ -55,7 +57,7 @@ var _bn1 = {
     },
     deepUpdates: [
       {
-        positions: [
+        addresses: [
           'player1_state.level.10.2',
           'player1_state.level.10.3',
           'player1_state.level.10.4',
@@ -70,7 +72,7 @@ var _bn1 = {
         ],
         value: null
       },{
-        positions: [
+        addresses: [
           'player2_state.playAnimations.button1',
           'player2_state.playAnimations.path1'
         ],
@@ -85,7 +87,7 @@ var _bn1 = {
     },
     deepUpdates: [
       {
-        positions: [
+        addresses: [
           'player1_state.level.10.2',
           'player1_state.level.10.3',
           'player1_state.level.10.4',
@@ -100,7 +102,7 @@ var _bn1 = {
         ],
         value: _bzz
       },{
-        positions: [
+        addresses: [
           'player2_state.playAnimations.button1',
           'player2_state.playAnimations.path1'
         ],
@@ -119,7 +121,7 @@ var _bn2 = {
     },
     deepUpdates: [
       {
-        positions: [
+        addresses: [
           'player1_state.level.8.8',
           'player1_state.level.7.8',
           'player1_state.level.7.7',
@@ -133,7 +135,7 @@ var _bn2 = {
         ],
         value: null
       },{
-        positions: [
+        addresses: [
           'player2_state.playAnimations.button2',
           'player2_state.playAnimations.path2'
         ],
@@ -148,7 +150,7 @@ var _bn2 = {
     },
     deepUpdates: [
       {
-        positions: [
+        addresses: [
           'player1_state.level.8.8',
           'player1_state.level.7.8',
           'player1_state.level.7.7',
@@ -162,7 +164,7 @@ var _bn2 = {
         ],
         value: _bzz
       },{
-        positions: [
+        addresses: [
           'player2_state.playAnimations.button2',
           'player2_state.playAnimations.path2'
         ],
@@ -181,7 +183,7 @@ var _bn3 = {
     },
     deepUpdates: [
       {
-        positions: [
+        addresses: [
           'player1_state.level.7.4',
           'player1_state.level.7.5',
           'player1_state.level.7.6',
@@ -196,7 +198,7 @@ var _bn3 = {
         ],
         value: null
       },{
-        positions: [
+        addresses: [
           'player2_state.playAnimations.button3',
           'player2_state.playAnimations.path3'
         ],
@@ -211,7 +213,7 @@ var _bn3 = {
     },
     deepUpdates: [
       {
-        positions: [
+        addresses: [
           'player1_state.level.7.4',
           'player1_state.level.7.5',
           'player1_state.level.7.6',
@@ -226,7 +228,7 @@ var _bn3 = {
         ],
         value: _bzz
       },{
-        positions: [
+        addresses: [
           'player2_state.playAnimations.button3',
           'player2_state.playAnimations.path3'
         ],
@@ -244,19 +246,19 @@ var _bn4 = {
     },
     deepUpdates: [
       {
-        positions: [
+        addresses: [
           'player2_state.level.11.5',
           'player2_state.level.11.6',
           'player2_state.level.11.7'
         ],
         value: null
       },{
-        positions: [
+        addresses: [
           'player1_state.playAnimations.button4'
         ],
         value: 'on'
       },{
-        positions: [
+        addresses: [
           'player2_state.playAnimations.laserBeamHorizontal'
         ],
         value: 'off'
@@ -269,20 +271,74 @@ var _bn4 = {
     },
     deepUpdates: [
       {
-        positions: [
+        addresses: [
           'player2_state.level.11.5',
           'player2_state.level.11.6',
           'player2_state.level.11.7'
         ],
         value: _wal
       },{
-        positions: [
+        addresses: [
           'player1_state.playAnimations.button4'
         ],
         value: 'off'
       },{
-        positions: [
+        addresses: [
           'player2_state.playAnimations.laserBeamHorizontal'
+        ],
+        value: 'always'
+      }
+    ]
+  }
+};
+
+var _bn5 = {
+  name: 'button',
+  onPlayerEnter: {
+    animations: {
+      button5: 'on'
+    },
+    deepUpdates: [
+      {
+        addresses: [
+          'player1_state.level.3.12',
+          'player1_state.level.4.12',
+          'player1_state.level.5.12'
+        ],
+        value: null
+      },{
+        addresses: [
+          'player2_state.playAnimations.button5'
+        ],
+        value: 'on'
+      },{
+        addresses: [
+          'player1_state.playAnimations.laserBeamVertical'
+        ],
+        value: 'off'
+      }
+    ]
+  },
+  onPlayerExit: {
+    animations: {
+      button5: 'off'
+    },
+    deepUpdates: [
+      {
+        addresses: [
+          'player1_state.level.3.12',
+          'player1_state.level.4.12',
+          'player1_state.level.5.12'
+        ],
+        value: _wal
+      },{
+        addresses: [
+          'player2_state.playAnimations.button5'
+        ],
+        value: 'off'
+      },{
+        addresses: [
+          'player1_state.playAnimations.laserBeamVertical'
         ],
         value: 'always'
       }
@@ -299,18 +355,18 @@ var _sho = {
     },
     deepUpdates: [
       {
-        positions: [
+        addresses: [
           'player2_state.playAnimations.symbols'
         ],
         value: 'show'
       },{
-        positions: [
+        addresses: [
           'player2_state.playAnimations.symbolScroll'
         ],
         value: 'off'
       },{
-        positions: [
-          'player2_state.level.6.12'
+        addresses: [
+          'player2_state.level.12.6'
         ],
         value: null
       }
@@ -320,6 +376,13 @@ var _sho = {
     animations: {},
     deepUpdates: []
   }
+};
+
+var _win = {
+  name: 'win-block',
+  targets: ['player'],
+  action: 'win',
+  effectors: ['player']
 };
 
 
@@ -364,16 +427,7 @@ var pathAnimations = [
 
 var gameData = {
   id: 'mock1',
-  last_message: [
-    { start: { x: 50,  y: 191 }, end: { x: 233, y: 379 }, color: 0xff0000 },
-    { start: { x: 10,  y: 422 }, end: { x: 108, y: 179 }, color: 0xff0000 },
-    // { start: { x: 19,  y: 9   }, end: { x: 429, y: 79  }, color: 0xff0000 },
-    // { start: { x: 604, y: 108 }, end: { x: 3,   y: 319 }, color: 0xff0000 },
-    // { start: { x: 179, y: 67  }, end: { x: 747, y: 92  }, color: 0x0000ff },
-    // { start: { x: 560, y: 155 }, end: { x: 626, y: 147 }, color: 0x0000ff },
-    // { start: { x: 423, y: 100 }, end: { x: 590, y: 68  }, color: 0xffff00 },
-    // { start: { x: 13,  y: 447 }, end: { x: 122, y: 4   }, color: 0xffff00 }
-  ],
+  last_message: [],
   player1: {
     id: 1
   },
@@ -394,6 +448,7 @@ var gameData = {
 
   player1_state: {
     worldBounds: [0, 0, 800, 700],
+    checkOnLoad: [],
     assets: [
       {
         type: 'image',
@@ -447,8 +502,8 @@ var gameData = {
           cycles: {
             next: 0,
             cycles: symbolCycles,
-            thisUpdate: 'player1_state.playAnimations.symbol1',
-            otherUpdate: 'player2_state.playAnimations.symbol1'
+            thisAddress: 'player1_state.playAnimations.symbol1',
+            otherAddress: 'player2_state.playAnimations.symbol1'
           }
         }
       },{
@@ -462,8 +517,8 @@ var gameData = {
           cycles: {
             next: 0,
             cycles: symbolCycles,
-            thisUpdate: 'player1_state.playAnimations.symbol2',
-            otherUpdate: 'player2_state.playAnimations.symbol2'
+            thisAddress: 'player1_state.playAnimations.symbol2',
+            otherAddress: 'player2_state.playAnimations.symbol2'
           }
         }
       },{
@@ -477,8 +532,8 @@ var gameData = {
           cycles: {
             next: 0,
             cycles: symbolCycles,
-            thisUpdate: 'player1_state.playAnimations.symbol3',
-            otherUpdate: 'player2_state.playAnimations.symbol3'
+            thisAddress: 'player1_state.playAnimations.symbol3',
+            otherAddress: 'player2_state.playAnimations.symbol3'
           }
         }
       },{
@@ -492,8 +547,8 @@ var gameData = {
           cycles: {
             next: 0,
             cycles: symbolCycles,
-            thisUpdate: 'player1_state.playAnimations.symbol4',
-            otherUpdate: 'player2_state.playAnimations.symbol4'
+            thisAddress: 'player1_state.playAnimations.symbol4',
+            otherAddress: 'player2_state.playAnimations.symbol4'
           }
         }
       },{
@@ -509,6 +564,14 @@ var gameData = {
         properties: {
           name: 'button4',
           immovable: true
+        }
+      },{
+        type: 'sprite',
+        args: [700, 200, 'button object'],
+        properties: {
+          name: 'win',
+          immovable: true,
+          // action: 'win'
         }
       },{
         type: 'sprite',
@@ -562,14 +625,15 @@ var gameData = {
       laserBeamVertical: 'always'
     },
     watchList: [
-      { x: 6, y: 12 }
+      { x: 6, y: 12 },
+      // { x: 14, y: 4 }
     ],
     level: [
       [_wal, _wal, _wal, _wal, _wal, _wal, _wal, _wal, _wal, _wal, _wal, _wal, _wal, null, null, null],
       [_wal, null, _wal, _wal, _wal, _wal, _wal, _wal, null, null, null, null, _wal, null, null, null],
       [_wal, null, _blk, _ws1, _ws2, _ws3, _ws4, _blk, null, null, null, null, _wal, _wal, _wal, _wal],
       [_wal, null, null, null, null, null, null, null, null, null, null, null, _wal, null, null, _wal],
-      [_wal, null, null, null, null, null, null, null, null, null, null, null, _wal, null, null, _wal],
+      [_wal, null, null, null, null, null, null, null, null, null, null, null, _wal, null, _win, _wal],
       [_wal, null, null, null, null, null, null, null, null, null, null, null, _wal, null, null, _wal],
       [_wal, null, _bzz, _bzz, _bzz, _bzz, _bzz, _bzz, _bzz, _bzz, null, null, _wal, _wal, _wal, _wal],
       [_wal, null, _bzz, null, _bzz, _bzz, _bzz, _bzz, _bzz, _bzz, null, null, _wal, null, null, null],
@@ -590,6 +654,40 @@ var gameData = {
 
   player2_state: {
     worldBounds: [0, 0, 800, 700],
+    checkOnLoad: [
+      {
+        verify: [
+          {
+            address: 'player2_state.playAnimations.symbol1',
+            shouldBe: 'w'
+          },{
+            address: 'player2_state.playAnimations.symbol2',
+            shouldBe: 'x'
+          },{
+            address: 'player2_state.playAnimations.symbol3',
+            shouldBe: 'z'
+          },{
+            address: 'player2_state.playAnimations.symbol4',
+            shouldBe: 'y'
+          }
+        ],
+        targets: [
+          {
+            addresses: [
+              'player2_state.level.3.12',
+              'player2_state.level.4.12',
+              'player2_state.level.5.12'
+            ],
+            value: null
+          },{
+            addresses: [
+              'player2_state.playAnimations.laserBeamVertical'
+            ],
+            value: 'off'
+          }
+        ]
+      }
+    ],
     assets: [
       {
         type: 'image',
@@ -636,61 +734,25 @@ var gameData = {
         type: 'sprite',
         args: [150, 50, 'symbol-xyz object'],
         properties: {
-          name: 'symbol1',
-          // move: {},
-          // blocks: [],
-          // action: 'cycle',
-          // cycles: {
-          //   next: 0,
-          //   cycles: symbolCycles,
-          //   thisUpdate: 'player1_state.playAnimations.symbol1',
-          //   otherUpdate: 'player2_state.playAnimations.symbol1'
-          // }
+          name: 'symbol1'
         }
       },{
         type: 'sprite',
         args: [200, 50, 'symbol-xyz object'],
         properties: {
-          name: 'symbol2',
-          // move: {},
-          // blocks: [],
-          // action: 'cycle',
-          // cycles: {
-          //   next: 0,
-          //   cycles: symbolCycles,
-          //   thisUpdate: 'player1_state.playAnimations.symbol2',
-          //   otherUpdate: 'player2_state.playAnimations.symbol2'
-          // }
+          name: 'symbol2'
         }
       },{
         type: 'sprite',
         args: [250, 50, 'symbol-xyz object'],
         properties: {
-          name: 'symbol3',
-          // move: {},
-          // blocks: [],
-          // action: 'cycle',
-          // cycles: {
-          //   next: 0,
-          //   cycles: symbolCycles,
-          //   thisUpdate: 'player1_state.playAnimations.symbol3',
-          //   otherUpdate: 'player2_state.playAnimations.symbol3'
-          // }
+          name: 'symbol3'
         }
       },{
         type: 'sprite',
         args: [300, 50, 'symbol-xyz object'],
         properties: {
-          name: 'symbol4',
-          // move: {},
-          // blocks: [],
-          // action: 'cycle',
-          // cycles: {
-          //   next: 0,
-          //   cycles: symbolCycles,
-          //   thisUpdate: 'player1_state.playAnimations.symbol4',
-          //   otherUpdate: 'player2_state.playAnimations.symbol4'
-          // }
+          name: 'symbol4'
         }
       },{
         type: 'sprite',
@@ -711,6 +773,13 @@ var gameData = {
         args: [500, 450, 'button object'],
         properties: {
           name: 'button3',
+          immovable: true
+        }
+      },{
+        type: 'sprite',
+        args: [700, 200, 'button object'],
+        properties: {
+          name: 'button5',
           immovable: true
         }
       },{
@@ -788,6 +857,10 @@ var gameData = {
         ['off', [0]],
         ['on', [1]]
       ],
+      button5: [
+        ['off', [0]],
+        ['on', [1]]
+      ],
       path1: pathAnimations,
       path2: pathAnimations,
       path3: pathAnimations,
@@ -825,6 +898,7 @@ var gameData = {
       'button1': 'off',
       'button2': 'off',
       'button3': 'off',
+      'button5': 'off',
       player: 'always',
       laserBeamHorizontal: 'always',
       laserBeamVertical: 'always',
@@ -834,14 +908,15 @@ var gameData = {
       { x: 10, y: 7 },
       { x: 10, y: 8 },
       { x: 10, y: 9 },
-      { x: 6, y: 12 }
+      { x: 6, y: 12 },
+      { x: 14, y: 4 }
     ],
     level: [
       [_wal, _wal, _wal, _wal, _wal, _wal, _wal, _wal, _wal, _wal, _wal, _wal, _wal, null, null, null],
       [_wal, null, _wal, _wal, _wal, _wal, _wal, _wal, null, null, null, null, _wal, null, null, null],
       [_wal, null, null, null, null, null, null, null, null, null, null, null, _wal, _wal, _wal, _wal],
       [_wal, null, null, null, null, null, null, null, null, null, null, null, _wal, null, null, _wal],
-      [_wal, null, null, null, null, null, null, null, null, null, null, null, _wal, null, null, _wal],
+      [_wal, null, null, null, null, null, null, null, null, null, null, null, _wal, null, _bn5, _wal],
       [_wal, null, null, null, null, null, null, null, null, null, null, null, _wal, null, null, _wal],
       [_wal, null, null, null, null, null, null, null, null, null, null, null, _wal, _wal, _wal, _wal],
       [_wal, null, null, null, null, null, null, null, null, null, _bn2, null, _wal, null, null, null],
@@ -862,13 +937,26 @@ route.get('/', function(request, response, next) {
 });
 
 route.put('/', function(request, response, next) {
-  Object.keys(request.body.state || {}).forEach(key=> gameData[key] = request.body.state[key]);
-  if (gameData.game_status_id == 2) {
-    gameData.game_status_id = 3;
-    gameData.game_status = 'player2 turn';
+  var room = gameData.player1.id == request.user.id ? gameData.player2.id : gameData.player1.id;
+  if (request.body.completed) {
+    var socketData = {
+      message: 'You have won the Mock Game!',
+      id: 'mock1'
+    };
   } else {
-    gameData.game_status_id = 2;
-    gameData.game_status = 'player1 turn';
+    Object.keys(request.body.state || {}).forEach(key=> gameData[key] = request.body.state[key]);
+    if (gameData.game_status_id == 2) {
+      gameData.game_status_id = 3;
+      gameData.game_status = 'player2 turn';
+    } else {
+      gameData.game_status_id = 2;
+      gameData.game_status = 'player1 turn';
+    }
+    socketData = {
+      message: 'The Mock Game has been updated.',
+      id: 'mock1'
+    };
   }
+  sockets.send(room, 'game updated', socketData);
   response.json({ success: true });
 });
