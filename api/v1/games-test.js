@@ -960,3 +960,14 @@ route.put('/', function(request, response, next) {
   sockets.send(room, 'game updated', socketData);
   response.json({ success: true });
 });
+
+module.exports.data = {
+  state: {
+    player1_state: gameData.player1_state,
+    player2_state: gameData.player2_state,
+    last_message: gameData.last_message
+  },
+  name: 'Collabowait',
+  creator_id: 1,
+  thumbnail: '/images/level1_tn.png'
+};
