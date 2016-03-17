@@ -172,8 +172,9 @@ route.put('/accept/:id', function(request, response, next) {
 route.put('/move/:id', function(request, response, next) {
   ifLoggedIn(request.user, function() {
     return makeMove(request.user.id, request.params.id, request.body)
-    .then(updateGame)
-    .then(sendMessage).then(function() {
+    .then(function(result) {
+      return request.body.completed ? completeGame(result) : updateGame(result);
+    }).then(sendMessage).then(function() {
       response.json({ message: 'game updated' });
     });
   }).catch(next);
@@ -312,6 +313,48 @@ function updateGame(data) {
           channel: 'game updated',
           data: {
             message: 'One of your games has been updated.',
+            id: data.gameId
+          }
+        });
+      });
+    } else return Promise.reject('You cannot modify this game.');
+  });
+}
+
+function completeGame(data) {
+  return Promise.all([
+    gamesQuery().where({ 'games.id': data.gameId }).andWhere(function() {
+      this.where({ player1_id: data.userId, 'game_statuses.status': 'player1 turn' })
+      .orWhere({ player2_id: data.userId, 'game_statuses.status': 'player2 turn' });
+    }),
+    knex('game_statuses')
+  ]).then(function(results) {
+    var game = results[0][0];
+    if (game) {
+      var status = results[1].find(status => status.status == 'completed');
+      return Promise.all([
+        knex('games').update({ game_status_id: status.id, last_updated: new Date() })
+        .where({ id: data.gameId }),
+        mongo.openDB().then(function(db) {
+          var search = { _id: mongo.ObjectId(game.game_state_id) };
+          return mongo.withOpen(db, 'game_states', 'findOne', search)
+          .then(function(results) {
+            return mongo.withOpen(db, 'game_states', 'update', search, {
+              $set: {
+                states: results[0].states.concat(data.state)
+              }
+            })
+          }).then(function() {
+            db.close();
+          });
+        })
+      ]).then(function() {
+        var otherPlayer = getOtherPlayer(data.userId, game.player1_id, game.player2_id);
+        return Promise.resolve({
+          sendId: otherPlayer,
+          channel: 'game completed',
+          data: {
+            message: 'One of your games has been completed!',
             id: data.gameId
           }
         });

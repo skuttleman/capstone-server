@@ -26,7 +26,7 @@ passport.use(new GoogleStrategy({
 function incorporateUser(profile, done) {
   return getOrCreateUser(profile).then(function(users) {
     var data = { user: users[0] }, secret = process.env.TOKEN_SECRET;
-    jwt.sign(data, secret, { expiresIn: '1d' }, function(token) {
+    jwt.sign(data, secret, { expiresIn: '30d' }, function(token) {
       done(null, token);
     });
   });
