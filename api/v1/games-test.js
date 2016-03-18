@@ -472,6 +472,9 @@ var gameData = {
         args: ['symbol-xyz object', '/level-images/symbol-xyz.png', 50, 50]
       },{
         type: 'spritesheet',
+        args: ['star object', '/level-images/star.png', 50, 50]
+      },{
+        type: 'spritesheet',
         args: ['laser-beam-vertical object', '/level-images/laser-beam-vertical.png', 50, 250]
       }
     ],
@@ -567,17 +570,16 @@ var gameData = {
         }
       },{
         type: 'sprite',
-        args: [700, 200, 'button object'],
-        properties: {
-          name: 'win',
-          immovable: true,
-          // action: 'win'
-        }
-      },{
-        type: 'sprite',
         args: [600, 100, 'laser-beam-vertical object'],
         properties: {
           name: 'laserBeamVertical'
+        }
+      },{
+        type: 'sprite',
+        args: [700, 200, 'star object'],
+        properties: {
+          name: 'star',
+          immovable: true
         }
       },{
         type: 'sprite',
@@ -612,6 +614,10 @@ var gameData = {
       laserBeamVertical: [
         ['always', [0, 1, 2, 3, 4], 10, true],
         ['off', [5]]
+      ],
+      star: [
+        ['on', [0]],
+        ['off', [1]]
       ]
     },
     playAnimations: {
@@ -622,7 +628,8 @@ var gameData = {
       'electric-pool object': 'waves',
       'button4': 'off',
       player: 'always',
-      laserBeamVertical: 'always'
+      laserBeamVertical: 'always',
+      star: 'on'
     },
     watchList: [
       { x: 6, y: 12 },
