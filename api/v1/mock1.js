@@ -459,8 +459,8 @@ var gameData = {
       },{
         type: 'spritesheet',
         // args: ['player', '/level-images/tilde.png', 50, 50]
-        // args: ['player', '/level-images/hyperlink.png', 50, 50]
-        args: ['player', '/level-images/player.png', 50, 50]
+        args: ['player', '/level-images/hyperlink.png', 50, 50]
+        // args: ['player', '/level-images/player.png', 50, 50]
       },{
         type: 'spritesheet',
         args: ['electric-pool object', '/level-images/electric-pool.png', 400, 250]
@@ -604,7 +604,7 @@ var gameData = {
         ['on', [1]]
       ],
       player: [
-        // ['always', [0, 1, 2, 3, 4, 5, 6, 7], 10, true] //(~)
+        // ['always', [0, 1, 2, 3, 4, 5], 10, true] //(~)
         ['always', [0, 1, 2, 3], 10, true] //other
       ],
       symbol1: symbolAnimations,
@@ -701,9 +701,9 @@ var gameData = {
         args: ['background', '/level-images/level1-p2-bg.png']
       },{
         type: 'spritesheet',
-        // args: ['player', '/level-images/tilde.png', 50, 50]
+        args: ['player', '/level-images/tilde.png', 50, 50]
         // args: ['player', '/level-images/hyperlink.png', 50, 50]
-        args: ['player', '/level-images/player.png', 50, 50]
+        // args: ['player', '/level-images/player.png', 50, 50]
       },{
         type: 'spritesheet',
         args: ['button object', '/level-images/button.png', 50, 50]
@@ -872,8 +872,8 @@ var gameData = {
       path2: pathAnimations,
       path3: pathAnimations,
       player: [
-        // ['always', [0, 1, 2, 3, 4, 5, 6, 7], 10, true] //(~)
-        ['always', [0, 1, 2, 3], 10, true] //other
+        ['always', [0, 1, 2, 3, 4, 5], 10, true] //(~)
+        // ['always', [0, 1, 2, 3], 10, true] //other
       ],
       symbol1: symbolAnimations,
       symbol2: symbolAnimations,
