@@ -16,7 +16,11 @@ mongo.openDB().then(function(db) {
 
 function updateLevel(db, levels) {
   return function(mock, i) {
-    return mongo.withOpen(db, 'game_levels', 'update', { _id: levels[i]._id },
-    { $set: mock });
+    if (levels[i]) {
+      var where = { _id: levels[i]._id };
+      return mongo.withOpen(db, 'game_levels', 'update', where, { $set: mock });
+    } else {
+      return mongo.withOpen(db, 'game_levels', 'insert', mock);
+    }
   };
 }
