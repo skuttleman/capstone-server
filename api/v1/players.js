@@ -5,7 +5,9 @@ var sockets = require('../../services/socket');
 module.exports = route;
 
 route.get('/:id', function(request, response, next) {
-  knex('players').where({ id: request.params.id }).then(function(players) {
+  knex('players')
+  .where({ id: request.params.id }).then(function(players) {
+    players.forEach(player=> delete player.phone_number);
     response.json({ players: players });
   }).catch(next);
 });
@@ -20,6 +22,7 @@ route.get('/', function(request, response, next) {
     var players = results[0];
     var online = sockets.userList();
     players.forEach(function(player) {
+      delete player.phone_number
       player.online = !!online.find((each) => each.id == player.id);
       player.encountered = (results[1].find(function(each) {
         return each.player1_id == player.id || each.player2_id == player.id;

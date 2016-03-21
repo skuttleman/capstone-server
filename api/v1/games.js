@@ -59,7 +59,10 @@ route.get('/levels', function(request, response, next) {
     knex('players')
   ]).then(function (results) {
     var levels = results[0], players = results[1];
-    levels.forEach(level=> level.creator = players.find(player=> player.id == level.creator_id));
+    levels.forEach(function(level) {
+      level.creator = players.find(player=> player.id == level.creator_id);
+      if (level.creator) delete level.creator.phone_number;
+    });
     response.json({ levels: levels });
   }).catch(next);
 });
