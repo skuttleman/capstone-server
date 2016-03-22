@@ -31,3 +31,13 @@ route.get('/', function(request, response, next) {
     response.json({ players: players });
   }).catch(next);
 });
+
+route.patch('/', function(request, response, next) {
+  if (request.user) {
+    knex('players').update({ phone_number: request.body.phoneNumber }).where({ id: request.user.id }).then(function() {
+      response.json({ success: true, message: 'Phone number updated' });
+    }).catch(next);
+  } else {
+    next('You must be logged in to preform this action.');
+  }
+});
