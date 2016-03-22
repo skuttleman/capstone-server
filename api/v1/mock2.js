@@ -230,7 +230,7 @@ var _bn4 = {
         value: 'on'
       },{
         addresses: [
-          'player2_state.playAnimations.horizontalBeam'
+          'player2_state.playAnimations.laserBeamHorizontal'
         ],
         value: 'off'
       }
@@ -250,9 +250,9 @@ var _bn4 = {
         value: _wal
       },{
         addresses: [
-          'player2_state.playAnimations.horizontalBeam'
+          'player2_state.playAnimations.laserBeamHorizontal'
         ],
-        value: 'on'
+        value: 'always'
       },{
         addresses: [
           'player1_state.playAnimations.button4'
@@ -533,7 +533,7 @@ var gameData = {
       { x: 10, y: 4 },
       { x: 10, y: 5 },
       { x: 10, y: 6 },
-      { x: 6, y: 9 }
+      // { x: 6, y: 9 }
     ],
     level: [
       [_wal, _wal, _wal, _wal, _wal, _wal, _wal, _wal, _wal, _wal, _wal, _wal, _wal],

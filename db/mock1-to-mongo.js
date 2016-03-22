@@ -1,3 +1,9 @@
+try {
+  require('dotenv').load();
+} catch (err) {
+  console.error(err);
+}
+
 var mongo = require('./mongo');
 var mocks = [
   require('../api/v1/mock1').data,
@@ -10,6 +16,7 @@ mongo.openDB().then(function(db) {
       mocks.map(updateLevel(db, levels))
     );
   }).then(function() {
+    console.log('mongo updated');
     db.close();
   }).catch(console.error);
 });
