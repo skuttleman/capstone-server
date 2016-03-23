@@ -39,7 +39,11 @@ server.listen(port, function() {
 
 
 app.use(function(err, request, response, next) {
-  response.status(err.status || 500);
+  if (err.message.indexOf('credentials') >= 0) {
+    response.status(401);
+  } else {
+    response.status(err.status || 500);
+  }
   console.error(err);
   response.json({
     message: err.message,
